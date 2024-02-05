@@ -1,5 +1,8 @@
-const express = require("express");
+import dotenv from "dotenv";
+import express from "express";
+import "./src/database";
 import homeRouter from "./src/routes/homeRoutes";
+dotenv.config();
 class App {
   constructor() {
     this.app = express();

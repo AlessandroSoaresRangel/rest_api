@@ -4,22 +4,17 @@ class UserController {
   async create(req, res) {
     try {
       const user = await User.create(req.body);
-      res.json({
-        user,
-      });
+      const { id, nome, email } = user;
+      res.json({ id, nome, email });
     } catch (error) {
       res.status(400).json({
-        errors: error.errors.map((e) => e.message),
+        errors: error.message,
       });
     }
-
-    console.log("teste");
   }
   async index(req, res) {
     try {
-      const users = await User.findAll();
-      console.log("user id: ", req.userId);
-      console.log("user emial: ", req.userEmail);
+      const users = await User.findAll({ attributes: ["id", "nome", "email"] });
 
       res.json(users);
     } catch (error) {
@@ -30,7 +25,8 @@ class UserController {
   async show(req, res) {
     try {
       const user = await User.findByPk(req.params.id);
-      res.json(user);
+      const { id, nome, email } = user;
+      res.json({ id, nome, email });
     } catch (error) {
       return res.json(null);
     }
@@ -38,16 +34,15 @@ class UserController {
 
   async update(req, res) {
     try {
-      const id = req.params.id;
-
-      const user = await User.findByPk(id);
+      const user = await User.findByPk(req.userId);
       if (!user) {
         return res.status(404).json({
           errors: ["Usuario não encontrado"],
         });
       }
       const newUser = await user.update(req.body);
-      return res.json(newUser);
+      const { id, nome, email } = newUser;
+      return res.json({ id, nome, email });
     } catch (error) {
       res.status(400).json({
         errors: error.errors.map((e) => e.message),
@@ -56,7 +51,7 @@ class UserController {
   }
   async delete(req, res) {
     try {
-      const id = req.params.id;
+      const id = req.userId;
 
       const user = await User.findByPk(id);
       if (!user) {
@@ -65,9 +60,7 @@ class UserController {
         });
       }
       await user.destroy();
-      return res.status(200).json({
-        response: ["Usuario deletado"],
-      });
+      return res.status(204).json(null);
     } catch (error) {
       res.status(400).json({
         errors: error.errors.map((e) => e.message),

@@ -1,11 +1,11 @@
 import bcryptjs from "bcryptjs";
-import Sequelize, { Model } from "sequelize";
+import { DataTypes, Model } from "sequelize";
 export default class User extends Model {
   static init(sequelize) {
     super.init(
       {
         nome: {
-          type: Sequelize.STRING,
+          type: DataTypes.STRING,
           defaultValue: "",
           validate: {
             len: {
@@ -15,7 +15,7 @@ export default class User extends Model {
           },
         },
         email: {
-          type: Sequelize.STRING,
+          type: DataTypes.STRING,
           defaultValue: "",
           unique: {
             msg: "Email já existe",
@@ -28,11 +28,11 @@ export default class User extends Model {
           },
         },
         password_hash: {
-          type: Sequelize.STRING,
+          type: DataTypes.STRING,
           defaultValue: "",
         },
         password: {
-          type: Sequelize.VIRTUAL,
+          type: DataTypes.VIRTUAL,
           defaultValue: "",
           validate: {
             len: {
@@ -49,5 +49,9 @@ export default class User extends Model {
         user.password_hash = await bcryptjs.hash(user.password, 8);
     });
     return this;
+  }
+
+  passwordIsValid(password) {
+    return bcryptjs.compare(password, this.password_hash);
   }
 }
